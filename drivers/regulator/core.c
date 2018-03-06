@@ -4345,6 +4345,9 @@ static int regulator_register_fill_coupling_array(struct device *dev,
 {
 	struct regulator_dev *rdev = dev_to_rdev(dev);
 
+	if (!IS_ENABLED(CONFIG_OF))
+		return 0;
+
 	if (regulator_fill_coupling_array(rdev))
 		rdev_dbg(rdev, "unable to resolve coupling\n");
 
@@ -4353,7 +4356,12 @@ static int regulator_register_fill_coupling_array(struct device *dev,
 
 static int regulator_resolve_coupling(struct regulator_dev *rdev)
 {
-	int n_phandles = of_get_n_coupled(rdev);
+	int n_phandles;
+
+	if (!IS_ENABLED(CONFIG_OF))
+		return 0;
+
+	n_phandles = of_get_n_coupled(rdev);
 
 	if (n_phandles + 1 > MAX_COUPLED) {
 		rdev_err(rdev, "too many regulators coupled\n");
